@@ -19,3 +19,4 @@ export function decodeCursor(cursorString) {
     return 0;
   }
 }
+

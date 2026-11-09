@@ -21,3 +21,4 @@ services:
         generateValue: true
       - key: DATA_DIR
         value: /data
+

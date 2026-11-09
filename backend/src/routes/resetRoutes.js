@@ -8,3 +8,4 @@ const router = Router();
 router.post('/', requireApiKey, validateResetInput, handleReset);
 
 export default router;
+

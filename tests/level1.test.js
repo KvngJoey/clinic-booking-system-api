@@ -111,3 +111,4 @@ describe('Level 1 — Basic Booking Functionality', () => {
     assert.equal(res.data.error, 'booking not found');
   });
 });
+

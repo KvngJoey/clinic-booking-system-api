@@ -9,3 +9,4 @@ export async function handleGetSlots(req, res, next) {
     next(err);
   }
 }
+

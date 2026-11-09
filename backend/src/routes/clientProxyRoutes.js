@@ -36,3 +36,4 @@ router.get('/bookings/:id', handleGetBookingById);
 router.delete('/bookings/:id', handleCancelBooking);
 
 export default router;
+

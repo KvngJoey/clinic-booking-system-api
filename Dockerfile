@@ -29,3 +29,4 @@ VOLUME ["/data"]
 
 # Start production server
 CMD ["node", "backend/server.js"]
+

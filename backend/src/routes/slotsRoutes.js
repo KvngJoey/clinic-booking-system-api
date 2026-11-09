@@ -7,3 +7,4 @@ const router = Router();
 router.get('/', requireApiKey, handleGetSlots);
 
 export default router;
+

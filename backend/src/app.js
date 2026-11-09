@@ -40,3 +40,4 @@ app.use(express.static(frontendPath));
 app.use(errorHandler);
 
 export default app;
+

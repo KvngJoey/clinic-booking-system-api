@@ -70,3 +70,4 @@ describe('Frontend & Client Proxy Integration', () => {
     assert.equal(cancelRes.data.status, 'cancelled');
   });
 });
+

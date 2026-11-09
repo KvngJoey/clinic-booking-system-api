@@ -160,3 +160,4 @@ class BookingsService {
 
 export const bookingsService = new BookingsService();
 export default bookingsService;
+

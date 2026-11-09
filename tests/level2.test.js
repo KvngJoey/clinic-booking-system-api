@@ -144,3 +144,4 @@ describe('Level 2 — API Key Authentication and Validation', () => {
     assert.equal(res.data.email, 'jane.doe@example.com');
   });
 });
+

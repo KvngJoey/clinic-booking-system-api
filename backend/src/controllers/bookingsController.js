@@ -42,3 +42,4 @@ export async function handleCancelBooking(req, res, next) {
     next(err);
   }
 }
+
