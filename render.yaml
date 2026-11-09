@@ -1,0 +1,23 @@
+services:
+  - type: web
+    name: clinic-booking-system
+    env: node
+    plan: starter
+    region: oregon
+    buildCommand: cd backend && npm install
+    startCommand: node backend/server.js
+    numInstances: 1
+    healthCheckPath: /health
+    disk:
+      name: clinic-data
+      mountPath: /data
+      sizeGB: 1
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: API_KEY
+        generateValue: true
+      - key: DATA_DIR
+        value: /data

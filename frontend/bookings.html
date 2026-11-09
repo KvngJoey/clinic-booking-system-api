@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage your clinic appointments and lookup booking history.">
+  <title>My Bookings | Koya Health Clinic</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Top Navigation Header -->
+  <header class="site-header">
+    <div class="header-container">
+      <a href="index.html" class="brand-link">
+        <div class="brand-icon">⚕</div>
+        <div class="brand-text">
+          <h1>Koya Health Clinic</h1>
+          <span class="brand-tagline">Quality Healthcare & Consultations</span>
+        </div>
+      </a>
+      <nav aria-label="Main Navigation">
+        <ul class="nav-links">
+          <li><a href="index.html" class="nav-link">Home</a></li>
+          <li><a href="index.html#available-slots" class="nav-link">Book Appointment</a></li>
+          <li><a href="bookings.html" class="nav-link active">My Bookings</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Page Header -->
+  <div style="background: linear-gradient(135deg, #075985 0%, #0369a1 100%); color: #ffffff; padding: 3rem 1.5rem 4rem; text-align: center;">
+    <div style="max-width: 800px; margin: 0 auto;">
+      <h2 style="font-size: 2.25rem; font-weight: 800; margin-bottom: 0.5rem; letter-spacing: -0.02em;">My Appointments</h2>
+      <p style="color: #e0f2fe; font-size: 1.05rem;">
+        Look up your appointment history using your email address or search directly by your booking reference ID.
+      </p>
+    </div>
+  </div>
+
+  <main class="main-container">
+
+    <!-- Global Alert / Notification Container -->
+    <div id="alert-container"></div>
+
+    <!-- Search Section (Email or ID) -->
+    <div class="card">
+      <div class="section-header">
+        <div>
+          <h2 class="section-title">Look Up Bookings</h2>
+          <p class="section-desc">Search by the email address you used when booking, or look up a specific reference.</p>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem;">
+        
+        <!-- Search By Email (Paginated List) -->
+        <div style="border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md);">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem;">
+            Search by Patient Email
+          </h3>
+          <form id="search-email-form">
+            <div class="form-group">
+              <label for="search-email-input" class="form-label">Email Address</label>
+              <input type="email" id="search-email-input" class="form-control" placeholder="ada@example.com" required>
+            </div>
+            <button type="submit" id="btn-search-email" class="btn btn-primary" style="width: 100%;">
+              <span id="search-email-spinner" class="spinner" style="display: none;"></span>
+              <span>Find My Bookings</span>
+            </button>
+          </form>
+        </div>
+
+        <!-- Search By ID (Direct Lookup) -->
+        <div style="border: 1px solid var(--border); padding: 1.25rem; border-radius: var(--radius-md);">
+          <h3 style="font-size: 1.1rem; font-weight: 700; color: var(--secondary); margin-bottom: 0.75rem;">
+            Lookup by Booking ID
+          </h3>
+          <form id="search-id-form">
+            <div class="form-group">
+              <label for="search-id-input" class="form-label">Booking Reference ID</label>
+              <input type="text" id="search-id-input" class="form-control" placeholder="e.g. 550e8400-e29b-41d4-a716-446655440000" required>
+            </div>
+            <button type="submit" id="btn-search-id" class="btn btn-secondary" style="width: 100%; border-color: var(--border);">
+              <span id="search-id-spinner" class="spinner" style="display: none; border-top-color: var(--primary);"></span>
+              <span>Lookup Specific Booking</span>
+            </button>
+          </form>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Single Booking Result Card (When searched by ID) -->
+    <div id="single-booking-result" style="display: none;">
+      <div class="card">
+        <div class="section-header">
+          <h3 class="section-title">Booking Details</h3>
+          <button id="btn-close-single-result" class="btn btn-outline" style="padding: 0.35rem 0.75rem; font-size: 0.85rem;">Close</button>
+        </div>
+        <div class="confirmation-details" style="margin: 0;">
+          <div class="detail-row">
+            <span class="detail-label">Booking ID</span>
+            <span class="detail-value" id="single-id">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Patient Name</span>
+            <span class="detail-value" id="single-name">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Patient Email</span>
+            <span class="detail-value" id="single-email">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Slot ID</span>
+            <span class="detail-value" id="single-slot">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Status</span>
+            <span class="detail-value" id="single-status-badge">--</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">Booked Date</span>
+            <span class="detail-value" id="single-created">--</span>
+          </div>
+          <div class="detail-row" id="single-action-row" style="padding-top: 1rem;">
+            <span class="detail-label">Action</span>
+            <span class="detail-value" id="single-action-btn-container"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Paginated Bookings List Section -->
+    <div id="bookings-list-section" class="card" style="display: none;">
+      <div class="section-header">
+        <div>
+          <h3 class="section-title" id="bookings-results-title">Bookings for Patient</h3>
+          <p class="section-desc" id="bookings-results-desc">Showing appointment records, oldest first.</p>
+        </div>
+        <div style="font-size: 0.85rem; color: var(--text-muted);" id="page-indicator">Page 1</div>
+      </div>
+
+      <!-- Bookings Loading Spinner -->
+      <div id="bookings-loading" class="empty-state" style="display: none;">
+        <div class="spinner" style="border-top-color: var(--primary); width: 32px; height: 32px; margin-bottom: 1rem;"></div>
+        <p>Loading appointments...</p>
+      </div>
+
+      <!-- Bookings Table -->
+      <div id="bookings-table-wrapper" class="bookings-table-container">
+        <table class="bookings-table">
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Slot ID</th>
+              <th>Patient</th>
+              <th>Created Date</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-table-body">
+            <!-- Dynamically populated -->
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Empty Bookings State -->
+      <div id="bookings-empty" class="empty-state" style="display: none;">
+        <div class="empty-icon">📂</div>
+        <h3>No Bookings Found</h3>
+        <p>No appointments were found registered under this email address.</p>
+      </div>
+
+      <!-- Pagination Navigation Controls (Cursor-based) -->
+      <div class="pagination-controls" id="pagination-controls">
+        <button id="btn-prev-page" class="btn btn-outline" disabled>
+          &larr; Previous Page
+        </button>
+        <span id="pagination-info" style="font-size: 0.9rem; color: var(--text-muted);">
+          Displaying up to 10 per page
+        </span>
+        <button id="btn-next-page" class="btn btn-outline" disabled>
+          Next Page &rarr;
+        </button>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Cancellation Confirmation Modal -->
+  <div id="cancel-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="cancel-modal-title">
+    <div class="modal-card">
+      <div class="modal-header">
+        <h3 id="cancel-modal-title" class="modal-title" style="color: var(--danger);">Cancel Appointment</h3>
+        <button id="cancel-modal-close-btn" class="modal-close" aria-label="Close modal">&times;</button>
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <p style="margin-bottom: 0.75rem; color: var(--text-main);">
+          Are you sure you want to cancel booking <strong id="cancel-target-id">--</strong>?
+        </p>
+        <p style="font-size: 0.85rem; color: var(--text-muted); background: var(--bg-subtle); padding: 0.75rem; border-radius: var(--radius-sm);">
+          ⚠️ Once cancelled, this slot will be freed immediately and made available for other patients to book. This action cannot be undone.
+        </p>
+      </div>
+
+      <div id="cancel-modal-alert"></div>
+
+      <div style="display: flex; gap: 0.75rem; justify-content: flex-end;">
+        <button type="button" id="cancel-modal-abort-btn" class="btn btn-outline">Keep Appointment</button>
+        <button type="button" id="cancel-modal-confirm-btn" class="btn btn-danger">
+          <span id="cancel-spinner" class="spinner" style="display: none;"></span>
+          <span id="cancel-label">Yes, Cancel Appointment</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Site Footer -->
+  <footer class="site-footer">
+    <div class="footer-content">
+      <p style="font-weight: 600; color: var(--secondary); margin-bottom: 0.35rem;">Koya Health Clinic & Consultation Center</p>
+      <p>124 Academy Way, Victoria Island, Lagos &bull; Contact: +234 (0) 800-KOYA-CLINIC &bull; Hours: Mon - Fri 8am - 6pm</p>
+      <p style="margin-top: 0.75rem; font-size: 0.8rem; color: var(--text-light);">&copy; 2026 Koya Health Clinic. Full-Stack Assessment Task 1.</p>
+    </div>
+  </footer>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

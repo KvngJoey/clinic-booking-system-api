@@ -1,0 +1,17 @@
+{
+  "name": "clinic-booking-system",
+  "version": "1.0.0",
+  "description": "Clinic Appointment Booking System - Full-Stack Assessment",
+  "type": "module",
+  "scripts": {
+    "start": "node backend/server.js",
+    "dev": "node --watch backend/server.js",
+    "test": "node --test --test-concurrency=1 tests/level1.test.js tests/level2.test.js tests/level3.test.js tests/level4.test.js tests/level5.test.js tests/persistence.test.js tests/frontendIntegration.test.js"
+  },
+  "keywords": [
+    "clinic-booking-system",
+    "assessment"
+  ],
+  "author": "",
+  "license": "ISC"
+}

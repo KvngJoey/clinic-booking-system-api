@@ -1,0 +1,10 @@
+[
+  {
+    "id": "c5ba9856-8e82-4f04-816a-a3a6dc593911",
+    "slot_id": "s_future",
+    "name": "Jane Doe",
+    "email": "jane.doe@example.com",
+    "status": "confirmed",
+    "created_at": "2026-11-09T16:54:38.023Z"
+  }
+]
