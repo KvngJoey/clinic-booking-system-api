@@ -295,6 +295,12 @@ function initHomePage() {
     confSlotId.textContent = booking.slot_id;
     confCreatedAt.textContent = formatDateTime(booking.created_at);
 
+    // Update View My Bookings button link to automatically navigate with email parameter
+    const confViewBookingsBtn = document.getElementById('conf-view-bookings-btn');
+    if (confViewBookingsBtn) {
+      confViewBookingsBtn.href = `bookings.html?email=${encodeURIComponent(booking.email)}`;
+    }
+
     // Store email in localStorage so bookings.html can automatically look it up
     try {
       localStorage.setItem('koya_last_email', booking.email);
@@ -378,14 +384,6 @@ function initBookingsPage() {
   let currentCursorIndex = 0;
   let nextCursor = null;
   let targetBookingToCancel = null;
-
-  // Pre-fill email from localStorage if available
-  try {
-    const savedEmail = localStorage.getItem('koya_last_email');
-    if (savedEmail && searchEmailInput) {
-      searchEmailInput.value = savedEmail;
-    }
-  } catch (_) {}
 
   // Search by Email
   if (searchEmailForm) {
@@ -502,30 +500,56 @@ function initBookingsPage() {
     fetchBookingsPage(prevCursor);
   });
 
+  // Search by ID helper function
+  async function lookupById(bookingId) {
+    searchIdSpinner.style.display = 'inline-block';
+
+    try {
+      const res = await fetch(`${API_BASE}/bookings/${encodeURIComponent(bookingId)}`);
+      const data = await res.json().catch(() => ({}));
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Booking not found');
+      }
+
+      renderSingleBooking(data);
+    } catch (err) {
+      showAlert('alert-container', `Lookup failed: ${err.message}`, 'danger');
+    } finally {
+      searchIdSpinner.style.display = 'none';
+    }
+  }
+
   // Search by ID
   if (searchIdForm) {
     searchIdForm.addEventListener('submit', async (e) => {
       e.preventDefault();
       const bookingId = searchIdInput.value.trim();
       if (!bookingId) return;
-
-      searchIdSpinner.style.display = 'inline-block';
-
-      try {
-        const res = await fetch(`${API_BASE}/bookings/${encodeURIComponent(bookingId)}`);
-        const data = await res.json().catch(() => ({}));
-
-        if (!res.ok) {
-          throw new Error(data.error || 'Booking not found');
-        }
-
-        renderSingleBooking(data);
-      } catch (err) {
-        showAlert('alert-container', `Lookup failed: ${err.message}`, 'danger');
-      } finally {
-        searchIdSpinner.style.display = 'none';
-      }
+      await lookupById(bookingId);
     });
+  }
+
+  // Auto-load if URL parameters (?email=... or ?id=...) or localStorage are present
+  const urlParams = new URLSearchParams(window.location.search);
+  const paramEmail = urlParams.get('email');
+  const paramId = urlParams.get('id');
+
+  if (paramId) {
+    if (searchIdInput) searchIdInput.value = paramId;
+    lookupById(paramId);
+  } else {
+    try {
+      const savedEmail = localStorage.getItem('koya_last_email');
+      const initialEmail = paramEmail || savedEmail;
+      if (initialEmail && searchEmailInput) {
+        searchEmailInput.value = initialEmail;
+        activeEmail = initialEmail.trim();
+        cursorStack = [null];
+        currentCursorIndex = 0;
+        fetchBookingsPage(null);
+      }
+    } catch (_) {}
   }
 
   function renderSingleBooking(b) {
