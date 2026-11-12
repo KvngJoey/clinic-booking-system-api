@@ -9,6 +9,9 @@ const __dirname = path.dirname(__filename);
 dotenv.config({ path: path.resolve(__dirname, '../../.env') });
 dotenv.config();
 
+const isVercel = process.env.VERCEL === '1' || process.env.VERCEL_ENV !== undefined;
+const defaultDataDir = isVercel ? '/tmp' : path.resolve(__dirname, '../data');
+
 const config = {
   port: parseInt(process.env.PORT || '3000', 10),
   nodeEnv: process.env.NODE_ENV || 'development',
@@ -17,7 +20,7 @@ const config = {
     ? path.isAbsolute(process.env.DATA_DIR)
       ? process.env.DATA_DIR
       : path.resolve(__dirname, '../../', process.env.DATA_DIR)
-    : path.resolve(__dirname, '../data')
+    : defaultDataDir
 };
 
 export default config;
