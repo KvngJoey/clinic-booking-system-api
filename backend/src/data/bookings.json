@@ -1,1 +1,18 @@
-[]
+[
+  {
+    "id": "772e45eb-6440-4bbb-858e-87d76e0228b4",
+    "slot_id": "s1",
+    "name": "Ada Obi",
+    "email": "ada@example.com",
+    "status": "cancelled",
+    "created_at": "2026-11-13T16:15:09.147Z"
+  },
+  {
+    "id": "2a085bd6-2553-4836-bead-da4a8027f05e",
+    "slot_id": "s1",
+    "name": "Ada Obi",
+    "email": "spam@example.com",
+    "status": "confirmed",
+    "created_at": "2026-11-13T16:49:05.840Z"
+  }
+]
