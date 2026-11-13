@@ -1,0 +1,283 @@
+{
+  "info": {
+    "_postman_id": "clinic-booking-system-collection",
+    "name": "Clinic Appointment Booking API",
+    "description": "Comprehensive Postman collection for Koya Academy Assessment API (Levels 1-5)",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000",
+      "type": "string"
+    },
+    {
+      "key": "apiKey",
+      "value": "koya_clinic_secret_key_2026",
+      "type": "string"
+    },
+    {
+      "key": "bookingId",
+      "value": "",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/health",
+          "host": ["{{baseUrl}}"],
+          "path": ["health"]
+        },
+        "description": "Public health check endpoint"
+      }
+    },
+    {
+      "name": "1. Reset Slots & Bookings (POST /reset)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"slots\": [\n    {\n      \"id\": \"s1\",\n      \"provider\": \"Dr Ade\",\n      \"start\": \"2026-12-10T09:00:00Z\",\n      \"end\": \"2026-12-10T09:30:00Z\"\n    },\n    {\n      \"id\": \"s2\",\n      \"provider\": \"Dr Ade\",\n      \"start\": \"2026-12-10T10:00:00Z\",\n      \"end\": \"2026-12-10T10:30:00Z\"\n    },\n    {\n      \"id\": \"s3\",\n      \"provider\": \"Dr Chioma\",\n      \"start\": \"2026-12-10T11:00:00Z\",\n      \"end\": \"2026-12-10T11:30:00Z\"\n    },\n    {\n      \"id\": \"s4\",\n      \"provider\": \"Dr Ibrahim\",\n      \"start\": \"2026-12-11T09:00:00Z\",\n      \"end\": \"2026-12-11T09:30:00Z\"\n    }\n  ]\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/reset",
+          "host": ["{{baseUrl}}"],
+          "path": ["reset"]
+        },
+        "description": "Level 1: Clears all bookings and replaces all slots"
+      }
+    },
+    {
+      "name": "2. List All Slots (GET /slots)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/slots",
+          "host": ["{{baseUrl}}"],
+          "path": ["slots"]
+        },
+        "description": "Level 1: Returns all slots earliest start first with available: true/false"
+      }
+    },
+    {
+      "name": "3. List Slots Filtered by Provider",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/slots?provider=Dr Ade",
+          "host": ["{{baseUrl}}"],
+          "path": ["slots"],
+          "query": [
+            {
+              "key": "provider",
+              "value": "Dr Ade"
+            }
+          ]
+        },
+        "description": "Level 1: Exact-match provider filter"
+      }
+    },
+    {
+      "name": "4. Book an Appointment (POST /bookings)",
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "if (pm.response.code === 201) {",
+              "    const json = pm.response.json();",
+              "    if (json.id) {",
+              "        pm.collectionVariables.set('bookingId', json.id);",
+              "    }",
+              "}"
+            ]
+          }
+        }
+      ],
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          },
+          {
+            "key": "Idempotency-Key",
+            "value": "idem-uuid-001",
+            "type": "text",
+            "description": "Optional Level 4 header"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"slot_id\": \"s1\",\n  \"name\": \"Ada Obi\",\n  \"email\": \"ada@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        },
+        "description": "Levels 1-5: Creates a booking, auto-saves returned ID to collection variable {{bookingId}}"
+      }
+    },
+    {
+      "name": "5. Lookup Booking by ID (GET /bookings/:id)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}"]
+        },
+        "description": "Level 1: Retrieves a booking by its unique identifier"
+      }
+    },
+    {
+      "name": "6. List Person's Bookings with Pagination (GET /bookings)",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings?email=ada@example.com&limit=10",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"],
+          "query": [
+            {
+              "key": "email",
+              "value": "ada@example.com"
+            },
+            {
+              "key": "limit",
+              "value": "10"
+            }
+          ]
+        },
+        "description": "Level 4: Case-insensitive email query with cursor pagination"
+      }
+    },
+    {
+      "name": "7. Cancel Booking (DELETE /bookings/:id)",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/bookings/{{bookingId}}",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings", "{{bookingId}}"]
+        },
+        "description": "Level 3: Sets status to cancelled and frees the slot"
+      }
+    },
+    {
+      "name": "8. Test Auth Failure - Missing Key (401)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/slots",
+          "host": ["{{baseUrl}}"],
+          "path": ["slots"]
+        },
+        "description": "Level 2: Verifies 401 Unauthorized when X-API-Key is omitted"
+      }
+    },
+    {
+      "name": "9. Test Conflict - Duplicate Booking (409)",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "X-API-Key",
+            "value": "{{apiKey}}",
+            "type": "text"
+          },
+          {
+            "key": "Content-Type",
+            "value": "application/json",
+            "type": "text"
+          }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"slot_id\": \"s1\",\n  \"name\": \"Another Patient\",\n  \"email\": \"patient2@example.com\"\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/bookings",
+          "host": ["{{baseUrl}}"],
+          "path": ["bookings"]
+        },
+        "description": "Level 3: Re-booking an already booked slot returns 409"
+      }
+    },
+    {
+      "name": "10. Client Proxy - List Slots (Browser Same-Origin)",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/client-api/slots",
+          "host": ["{{baseUrl}}"],
+          "path": ["client-api", "slots"]
+        },
+        "description": "Same-origin client proxy used by browser frontend without exposing API key"
+      }
+    }
+  ]
+}
